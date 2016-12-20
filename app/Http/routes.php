@@ -14,3 +14,4 @@
 Route::get('/', function () {return view('welcome');});  // 网站首页
 
 Route::controller('/demo','Api\DemoController');
+Route::controller('/region','Api\RegionController');
