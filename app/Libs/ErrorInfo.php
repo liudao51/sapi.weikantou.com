@@ -43,6 +43,10 @@ class ErrorInfo
         $errors['2000'] = array('code' => '2000', 'msg' => 'Unknowed Error', 'sub_msg' => '未知错误');
         $errors['2001'] = array('code' => '2001', 'msg' => 'Request Parameter Error', 'sub_msg' => '请求参数错误');
 
+        //oauth2.0
+        $errors['2500'] = array('code' => '2500', 'msg' => 'Oauth2 Exception Error', 'sub_msg' => 'Oauth2 系统错误');
+        $errors['2501'] = array('code' => '2501', 'msg' => 'User Deny Access', 'sub_msg' => '用户拒绝访问');
+
         //CRUD操作——Create(创建)、Read(读取)、Update(更新)、Delete(删除)
         $errors['3001'] = array('code' => '3001', 'msg' => 'Create Fail', 'sub_msg' => '创建失败');
         $errors['3002'] = array('code' => '3002', 'msg' => 'Read Fail', 'sub_msg' => '读取失败');

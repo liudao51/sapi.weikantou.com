@@ -11,6 +11,8 @@
 
 namespace LucaDegasperi\OAuth2Server\Middleware;
 
+use App\Http\Controllers\Api\BController;
+use App\Libs\ErrorInfo;
 use Closure;
 use LucaDegasperi\OAuth2Server\Authorizer;
 
@@ -19,7 +21,7 @@ use LucaDegasperi\OAuth2Server\Authorizer;
  *
  * @author Luca Degasperi <packages@lucadegasperi.com>
  */
-class CheckAuthCodeRequestMiddleware
+class CheckAuthCodeRequestMiddleware extends BController
 {
     /**
      * The authorizer instance.
@@ -41,17 +43,25 @@ class CheckAuthCodeRequestMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @param \Closure $next
      *
      * @return mixed
      */
     public function handle($request, Closure $next)
     {
-        $this->authorizer->setRequest($request);
+        try {
+            $this->authorizer->setRequest($request);
+            $this->authorizer->checkAuthCodeRequest();
 
-        $this->authorizer->checkAuthCodeRequest();
-
-        return $next($request);
+            return $next($request);
+        } catch (\Exception $e) {
+            //Oauth2 系统错误格式：{"httpStatusCode":400,"errorType":"invalid_request","redirectUri":null,"parameter":"code"}
+            if (isset($e) && !empty($e)) {
+                return $this->responseFail("[" . $e->parameter . "]" . $e->errorType, 2500);
+            } else {
+                return $this->responseFail(ErrorInfo::Errors(2000), 2000);
+            }
+        }
     }
 }

@@ -29,11 +29,13 @@ class MAC extends AbstractTokenType implements TokenTypeInterface
         $this->server->getMacStorage()->create($macKey, $this->getParam('access_token'));
 
         $response = [
-            'access_token'  =>  $this->getParam('access_token'),
-            'token_type'    =>  'mac',
-            'expires_in'    =>  $this->getParam('expires_in'),
-            'mac_key'       =>  $macKey,
-            'mac_algorithm' =>  'hmac-sha-256',
+            'token_type' => 'mac',
+            'mac_key' => $macKey,
+            'mac_algorithm' => 'hmac-sha-256',
+            'access_token' => $this->getParam('access_token'),
+            'expires_in' => $this->getParam('expires_in'),
+            'refresh_token' => '',
+            'scope' => $this->getParam('scope'),
         ];
 
         if (!is_null($this->getParam('refresh_token'))) {
@@ -93,7 +95,7 @@ class MAC extends AbstractTokenType implements TokenTypeInterface
         }
 
         $accessToken = $params->get('id');
-        $timestamp = (int) $params->get('ts');
+        $timestamp = (int)$params->get('ts');
         $nonce = $params->get('nonce');
         $signature = $params->get('mac');
 

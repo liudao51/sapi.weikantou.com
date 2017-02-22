@@ -13,6 +13,9 @@ namespace League\OAuth2\Server\TokenType;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Bearer Token Type
+ */
 class Bearer extends AbstractTokenType implements TokenTypeInterface
 {
     /**
@@ -21,9 +24,11 @@ class Bearer extends AbstractTokenType implements TokenTypeInterface
     public function generateResponse()
     {
         $return = [
-            'access_token'  =>  $this->getParam('access_token'),
-            'token_type'    =>  'Bearer',
-            'expires_in'    =>  $this->getParam('expires_in'),
+            'token_type' => 'Bearer',
+            'access_token' => $this->getParam('access_token'),
+            'expires_in' => $this->getParam('expires_in'),
+            'refresh_token' => '',
+            'scope' => $this->getParam('scope'),
         ];
 
         if (!is_null($this->getParam('refresh_token'))) {

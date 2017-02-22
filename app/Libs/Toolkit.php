@@ -86,6 +86,21 @@ class Toolkit
     }
 
     /**
+     * 是否布尔值
+     *
+     * @param $var
+     * @return bool
+     */
+    public static function is_bool($var)
+    {
+        if (isset($var) && is_bool($var)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * 是否是数组
      *
      * @param $var

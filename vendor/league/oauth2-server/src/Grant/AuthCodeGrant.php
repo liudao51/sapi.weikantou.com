@@ -111,12 +111,12 @@ class AuthCodeGrant extends AbstractGrant
     public function checkAuthorizeParams()
     {
         // Get required params
-        $clientId = $this->server->getRequest()->query->get('client_id', null);
+        $clientId = $this->server->getRequest()->get('client_id', null);
         if (is_null($clientId)) {
             throw new Exception\InvalidRequestException('client_id');
         }
 
-        $redirectUri = $this->server->getRequest()->query->get('redirect_uri', null);
+        $redirectUri = $this->server->getRequest()->get('redirect_uri', null);
         if (is_null($redirectUri)) {
             throw new Exception\InvalidRequestException('redirect_uri');
         }
@@ -139,7 +139,7 @@ class AuthCodeGrant extends AbstractGrant
             throw new Exception\InvalidRequestException('state', $redirectUri);
         }
 
-        $responseType = $this->server->getRequest()->query->get('response_type', null);
+        $responseType = $this->server->getRequest()->get('response_type', null);
         if (is_null($responseType)) {
             throw new Exception\InvalidRequestException('response_type', $redirectUri);
         }
@@ -150,24 +150,24 @@ class AuthCodeGrant extends AbstractGrant
         }
 
         // Validate any scopes that are in the request
-        $scopeParam = $this->server->getRequest()->query->get('scope', '');
+        $scopeParam = $this->server->getRequest()->get('scope', '');
         $scopes = $this->validateScopes($scopeParam, $client, $redirectUri);
 
         return [
-            'client'        => $client,
-            'redirect_uri'  => $redirectUri,
-            'state'         => $state,
+            'client' => $client,
+            'redirect_uri' => $redirectUri,
+            'state' => $state,
             'response_type' => $responseType,
-            'scopes'        => $scopes
+            'scopes' => $scopes
         ];
     }
 
     /**
      * Parse a new authorize request
      *
-     * @param string $type       The session owner's type
-     * @param string $typeId     The session owner's ID
-     * @param array  $authParams The authorize request $_GET parameters
+     * @param string $type The session owner's type
+     * @param string $typeId The session owner's ID
+     * @param array $authParams The authorize request $_GET parameters
      *
      * @return string An authorisation code
      */
@@ -193,7 +193,8 @@ class AuthCodeGrant extends AbstractGrant
         $authCode->setSession($session);
         $authCode->save();
 
-        return $authCode->generateRedirectUri($authParams['state']);
+        //return $authCode->generateRedirectUri($authParams['state']);  //返回带code的uri
+        return $authCode->getId(); //返回code
     }
 
     /**
@@ -211,8 +212,7 @@ class AuthCodeGrant extends AbstractGrant
             throw new Exception\InvalidRequestException('client_id');
         }
 
-        $clientSecret = $this->server->getRequest()->request->get('client_secret',
-            $this->server->getRequest()->getPassword());
+        $clientSecret = $this->server->getRequest()->request->get('client_secret', $this->server->getRequest()->getPassword());
         if ($this->shouldRequireClientSecret() && is_null($clientSecret)) {
             throw new Exception\InvalidRequestException('client_secret');
         }
@@ -223,12 +223,7 @@ class AuthCodeGrant extends AbstractGrant
         }
 
         // Validate client ID and client secret
-        $client = $this->server->getClientStorage()->get(
-            $clientId,
-            $clientSecret,
-            $redirectUri,
-            $this->getIdentifier()
-        );
+        $client = $this->server->getClientStorage()->get($clientId, $clientSecret, $redirectUri, $this->getIdentifier());
 
         if (($client instanceof ClientEntity) === false) {
             $this->server->getEventEmitter()->emit(new Event\ClientAuthenticationFailedEvent($this->server->getRequest()));
@@ -277,6 +272,15 @@ class AuthCodeGrant extends AbstractGrant
         $this->server->getTokenType()->setSession($session);
         $this->server->getTokenType()->setParam('access_token', $accessToken->getId());
         $this->server->getTokenType()->setParam('expires_in', $this->getAccessTokenTTL());
+
+        //扩展增加的参数
+        $scope_str = '';
+        foreach ($accessToken->getScopes() as $scope) {
+            $scope_str .= $scope->getId() . $this->server->getScopeDelimiter();
+        }
+        $scope_str = rtrim($scope_str, $this->server->getScopeDelimiter());
+
+        $this->server->getTokenType()->setParam('scope', $scope_str);   //权限列表
 
         // Associate a refresh token if set
         if ($this->server->hasGrantType('refresh_token')) {

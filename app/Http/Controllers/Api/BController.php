@@ -100,14 +100,13 @@ class BController extends Controller
     protected function requestHandle(Request $request)
     {
         $contentType = $request->getContentType();
+        $contentType = in_array($contentType, array('json', 'html')) ? $contentType : 'html'; //默认处理html请求
 
         $request_data = array();
         if ($contentType == 'json') {
             $request_data = $request->json(); //处理 "Content-Type: application/json" 格式的请求
         } elseif ($contentType == 'html') {
             $request_data = new ParameterBag($request->all());  //处理 "Content-Type: text/html" 格式的请求
-        } else {
-            $request_data = $request->json(); //默认处理 "Content-Type: application/json" 格式的请求
         }
 
         /**

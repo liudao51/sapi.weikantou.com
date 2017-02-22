@@ -151,7 +151,9 @@ class Authorizer
      */
     public function checkAuthCodeRequest()
     {
-        $this->authCodeRequestParams = $this->issuer->getGrantType('authorization_code')->checkAuthorizeParams();
+        $grantType = $this->issuer->getGrantType('authorization_code');
+
+        $this->authCodeRequestParams = $grantType->checkAuthorizeParams();
     }
 
     /**

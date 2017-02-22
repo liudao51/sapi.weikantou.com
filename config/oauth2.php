@@ -30,28 +30,28 @@ return [
 
     //see: https://github.com/lucadegasperi/oauth2-server-laravel/blob/master/docs/authorization-server/choosing-grant.md
     'grant_types' => [
-        /*'authorization_code' => [
+        'authorization_code' => [
             'class' => '\League\OAuth2\Server\Grant\AuthCodeGrant',
             'access_token_ttl' => 3600,
             'auth_token_ttl' => 3600
-        ],*/
+        ],
 
-        /*'password' => [
+        'password' => [
             'class' => '\League\OAuth2\Server\Grant\PasswordGrant',
-            'callback' => '\YourAppNamespace\Verifier@verify',
+            'callback' => 'App\Http\Controllers\Api\OauthController@getPasswordverify',
             'access_token_ttl' => 3600
-        ],*/
+        ],
 
-        /*'client_credentials' => [
+        'client_credentials' => [
             'class' => '\League\OAuth2\Server\Grant\ClientCredentialsGrant',
             'access_token_ttl' => 3600
-        ],*/
+        ],
 
-        /*'refresh_token' => [
+        'refresh_token' => [
             'class' => '\League\OAuth2\Server\Grant\RefreshTokenGrant',
             'access_token_ttl' => 3600,
             'refresh_token_ttl' => 36000
-        ]*/
+        ]
     ],
 
     /*

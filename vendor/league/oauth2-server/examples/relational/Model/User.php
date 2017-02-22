@@ -4,14 +4,14 @@ namespace RelationalExample\Model;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-class Users
+class User
 {
     public function get($username = null)
     {
-        $query = Capsule::table('users')->select(['username', 'password', 'name', 'email', 'photo']);
+        $query = Capsule::table('user')->select(['id', 'user_name']);
 
         if ($username !== null) {
-            $query->where('username', '=', $username);
+            $query->where('user_name', '=', $username);
         }
 
         $result = $query->get();

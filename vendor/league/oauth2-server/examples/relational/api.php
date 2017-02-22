@@ -44,9 +44,9 @@ $router->get('/tokeninfo', function (Request $request) use ($server) {
 });
 
 // GET /users
-$router->get('/users', function (Request $request) use ($server) {
+$router->get('/user', function (Request $request) use ($server) {
 
-    $results = (new Model\Users())->get();
+    $results = (new Model\User())->get();
 
     $users = [];
 
@@ -71,9 +71,9 @@ $router->get('/users', function (Request $request) use ($server) {
 });
 
 // GET /users/{username}
-$router->get('/users/{username}', function (Request $request, Response $response, array $args) use ($server) {
+$router->get('/user/{username}', function (Request $request, Response $response, array $args) use ($server) {
 
-    $result = (new Model\Users())->get($args['username']);
+    $result = (new Model\User())->get($args['username']);
 
     if (count($result) === 0) {
         throw new NotFoundException();
