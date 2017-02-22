@@ -61,8 +61,8 @@ class FluentRefreshToken extends AbstractFluentAdapter implements RefreshTokenIn
             'id' => $token,
             'expire_time' => $expireTime,
             'access_token_id' => $accessToken,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'create_time' => TIME_BJ,
+            'update_time' => TIME_BJ,
         ]);
 
         return (new RefreshTokenEntity($this->getServer()))

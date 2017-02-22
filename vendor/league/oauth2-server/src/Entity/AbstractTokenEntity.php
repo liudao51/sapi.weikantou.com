@@ -48,6 +48,19 @@ abstract class AbstractTokenEntity
     protected $expireTime = 0;
 
     /**
+     * Token create time
+     *
+     * @var int
+     */
+    protected $createTime = 0;
+    /**
+     * Token update time
+     *
+     * @var int
+     */
+    protected $updateTime = 0;
+
+    /**
      * Authorization or resource server
      *
      * @var \League\OAuth2\Server\AbstractServer
@@ -59,7 +72,7 @@ abstract class AbstractTokenEntity
      *
      * @param \League\OAuth2\Server\AbstractServer $server
      *
-     * @return self
+     * @return AbstractTokenEntity self
      */
     public function __construct(AbstractServer $server)
     {
@@ -114,6 +127,54 @@ abstract class AbstractTokenEntity
     public function isExpired()
     {
         return ((time() - $this->expireTime) > 0);
+    }
+
+    /**
+     * Set the create time of the token
+     *
+     * @param integer $createTime Unix time stamp
+     *
+     * @return self
+     */
+    public function setCreateTime($createTime)
+    {
+        $this->createTime = $createTime;
+
+        return $this;
+    }
+
+    /**
+     * Return token create time
+     *
+     * @return int
+     */
+    public function getCreateTime()
+    {
+        return $this->createTime;
+    }
+
+    /**
+     * Set the update time of the token
+     *
+     * @param integer $updateTime Unix time stamp
+     *
+     * @return self
+     */
+    public function setUpdateTime($updateTime)
+    {
+        $this->updateTime = $updateTime;
+
+        return $this;
+    }
+
+    /**
+     * Return token update time
+     *
+     * @return int
+     */
+    public function getUpdateTime()
+    {
+        return $this->updateTime;
     }
 
     /**

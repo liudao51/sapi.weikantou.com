@@ -106,8 +106,8 @@ class FluentAccessToken extends AbstractFluentAdapter implements AccessTokenInte
             'id' => $token,
             'expire_time' => $expireTime,
             'session_id' => $sessionId,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'create_time' => TIME_BJ,
+            'update_time' => TIME_BJ,
         ]);
 
         return (new AccessTokenEntity($this->getServer()))
@@ -128,8 +128,8 @@ class FluentAccessToken extends AbstractFluentAdapter implements AccessTokenInte
         $this->getConnection()->table('oauth_access_token_scopes')->insert([
             'access_token_id' => $token->getId(),
             'scope_id' => $scope->getId(),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'create_time' => TIME_BJ,
+            'update_time' => TIME_BJ,
         ]);
     }
 

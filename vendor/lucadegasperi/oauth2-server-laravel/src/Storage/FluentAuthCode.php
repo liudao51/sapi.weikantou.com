@@ -34,7 +34,7 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
     {
         $result = $this->getConnection()->table('oauth_auth_codes')
             ->where('oauth_auth_codes.id', $code)
-            ->where('oauth_auth_codes.expire_time', '>=', time())
+            ->where('oauth_auth_codes.expire_time', '>=', TIME_BJ)
             ->first();
 
         if (is_null($result)) {
@@ -44,7 +44,7 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
         return (new AuthCodeEntity($this->getServer()))
             ->setId($result->id)
             ->setRedirectUri($result->redirect_uri)
-            ->setExpireTime((int) $result->expire_time);
+            ->setExpireTime((int)$result->expire_time);
     }
 
     /**
@@ -66,7 +66,7 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
 
         foreach ($result as $scope) {
             $scopes[] = (new ScopeEntity($this->getServer()))->hydrate([
-               'id' => $scope->id,
+                'id' => $scope->id,
                 'description' => $scope->description,
             ]);
         }
@@ -87,8 +87,8 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
         $this->getConnection()->table('oauth_auth_code_scopes')->insert([
             'auth_code_id' => $token->getId(),
             'scope_id' => $scope->getId(),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'create_time' => TIME_BJ,
+            'update_time' => TIME_BJ,
         ]);
     }
 
@@ -102,8 +102,8 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
     public function delete(AuthCodeEntity $token)
     {
         $this->getConnection()->table('oauth_auth_codes')
-        ->where('oauth_auth_codes.id', $token->getId())
-        ->delete();
+            ->where('oauth_auth_codes.id', $token->getId())
+            ->delete();
     }
 
     /**
@@ -123,8 +123,8 @@ class FluentAuthCode extends AbstractFluentAdapter implements AuthCodeInterface
             'session_id' => $sessionId,
             'redirect_uri' => $redirectUri,
             'expire_time' => $expireTime,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'create_time' => TIME_BJ,
+            'update_time' => TIME_BJ,
         ]);
     }
 }

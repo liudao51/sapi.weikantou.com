@@ -163,8 +163,8 @@ class FluentClient extends AbstractFluentAdapter implements ClientInterface
             'id' => $id,
             'name' => $name,
             'secret' => $secret,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
+            'create_time' => TIME_BJ,
+            'update_time' => TIME_BJ,
         ]);
     }
 

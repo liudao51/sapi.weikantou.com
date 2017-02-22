@@ -182,7 +182,7 @@ class AuthCodeGrant extends AbstractGrant
         $authCode = new AuthCodeEntity($this->server);
         $authCode->setId(SecureKey::generate());
         $authCode->setRedirectUri($authParams['redirect_uri']);
-        $authCode->setExpireTime(time() + $this->authTokenTTL);
+        $authCode->setExpireTime(TIME_BJ + $this->authTokenTTL);
 
         foreach ($authParams['scopes'] as $scope) {
             $authCode->associateScope($scope);
