@@ -101,21 +101,46 @@ class OauthController extends BController
         if (!isset($grant_type) || ($grant_type == '')) {
             return $this->responseFail('[grant_type]' . ErrorInfo::Errors(2001), 2001);
         }
-        $code = ($request_data->has('code') && Toolkit::is_string($request_data->get('code'))) ? trim($request_data->get('code')) : null;
-        if (!isset($grant_type) || ($code == '')) {
-            return $this->responseFail('[code]' . ErrorInfo::Errors(2001), 2001);
-        }
+
         $client_id = ($request_data->has('client_id') && Toolkit::is_string($request_data->get('client_id'))) ? trim($request_data->get('client_id')) : null;
         if (!isset($client_id) || ($client_id == '')) {
             return $this->responseFail('[client_id]' . ErrorInfo::Errors(2001), 2001);
         }
+
         $client_secret = ($request_data->has('client_secret') && Toolkit::is_string($request_data->get('client_secret'))) ? trim($request_data->get('client_secret')) : null;
         if (!isset($client_secret) || ($client_secret == '')) {
             return $this->responseFail('[client_secret]' . ErrorInfo::Errors(2001), 2001);
         }
-        $redirect_uri = ($request_data->has('redirect_uri') && Toolkit::is_string($request_data->get('redirect_uri'))) ? trim($request_data->get('redirect_uri')) : null;
-        if (!isset($redirect_uri) || ($redirect_uri == '')) {
-            return $this->responseFail('[redirect_uri]' . ErrorInfo::Errors(2001), 2001);
+
+        switch ($grant_type) {
+            /**
+             * Auth Code Grant 授权码模式
+             */
+            case 'authorization_code': {
+                $code = ($request_data->has('code') && Toolkit::is_string($request_data->get('code'))) ? trim($request_data->get('code')) : null;
+                if (!isset($code) || ($code == '')) {
+                    return $this->responseFail('[code]' . ErrorInfo::Errors(2001), 2001);
+                }
+
+                $redirect_uri = ($request_data->has('redirect_uri') && Toolkit::is_string($request_data->get('redirect_uri'))) ? trim($request_data->get('redirect_uri')) : null;
+                if (!isset($redirect_uri) || ($redirect_uri == '')) {
+                    return $this->responseFail('[redirect_uri]' . ErrorInfo::Errors(2001), 2001);
+                }
+
+                break;
+            }
+
+            /**
+             * Refresh Token Grant 刷新凭证模式
+             */
+            case 'refresh_token': {
+                $refresh_token = ($request_data->has('refresh_token') && Toolkit::is_string($request_data->get('refresh_token'))) ? trim($request_data->get('refresh_token')) : null;
+                if (!isset($refresh_token) || ($refresh_token == '')) {
+                    return $this->responseFail('[refresh_token]' . ErrorInfo::Errors(2001), 2001);
+                }
+
+                break;
+            }
         }
 
         try {
