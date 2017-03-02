@@ -12,6 +12,7 @@ use App\Libs\ErrorInfo;
 use App\Libs\Toolkit;
 use App\Services\OauthService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * OAuth2.0用户授权控制器类
@@ -130,6 +131,24 @@ class OauthController extends BController
                 break;
             }
 
+
+            /**
+             * Password Grant 密码模式
+             */
+            case 'password': {
+                $username = ($request_data->has('username') && Toolkit::is_string($request_data->get('username'))) ? trim($request_data->get('username')) : null;
+                if (!isset($username) || ($username == '')) {
+                    return $this->responseFail('[username]' . ErrorInfo::Errors(2001), 2001);
+                }
+
+                $password = ($request_data->has('password') && Toolkit::is_string($request_data->get('password'))) ? trim($request_data->get('password')) : null;
+                if (!isset($password) || ($password == '')) {
+                    return $this->responseFail('[password]' . ErrorInfo::Errors(2001), 2001);
+                }
+
+                break;
+            }
+
             /**
              * Refresh Token Grant 刷新凭证模式
              */
@@ -153,10 +172,31 @@ class OauthController extends BController
         } catch (\Exception $e) {
             //Oauth2 系统错误格式：{"httpStatusCode":400,"errorType":"invalid_request","redirectUri":null,"parameter":"code"}
             if (isset($e) && !empty($e)) {
-                return $this->responseFail("[" . $e->parameter . "]" . $e->errorType, 2500);
+                // return $this->responseFail("[" . $e->parameter . "]" . $e->errorType, 2500);
             } else {
                 return $this->responseFail(ErrorInfo::Errors(2000), 2000);
             }
         }
+    }
+
+    /**
+     * 验证用户
+     *
+     * @param $username
+     * @param $pwd
+     * @return bool
+     */
+    public function getPasswordverify($username, $password)
+    {
+        $credentials = [
+            'email' => $username,
+            'password' => $password,
+        ];
+
+        if (Auth::once($credentials)) {
+            return Auth::user()->id;
+        }
+
+        return false;
     }
 }

@@ -36,11 +36,11 @@ return [
             'auth_token_ttl' => 3600
         ],
 
-        /*'password' => [
+        'password' => [
             'class' => '\League\OAuth2\Server\Grant\PasswordGrant',
             'callback' => 'App\Http\Controllers\Api\OauthController@getPasswordverify',
             'access_token_ttl' => 3600
-        ],*/
+        ],
 
         /*
         'client_credentials' => [
