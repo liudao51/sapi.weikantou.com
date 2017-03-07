@@ -49,7 +49,7 @@ class DebugService extends BService
      *
      * @return string
      */
-    public static function getLastSql()
+    public function getLastSql()
     {
         $lastSql = array();
         $sqlList = \DB::getQueryLog();

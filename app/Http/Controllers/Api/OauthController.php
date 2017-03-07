@@ -24,7 +24,7 @@ class OauthController extends BController
 {
     public function __construct()
     {
-        $this->middleware('check-authorization-params', ['only' => ['postAuthorize']]);
+        //$this->middleware('check-authorization-params', ['only' => ['postAuthorize']]);
     }
 
     /**
@@ -48,9 +48,9 @@ class OauthController extends BController
     {
         $request_data = $this->requestHandle($request);
 
-        $client_id = ($request_data->has('client_id') && Toolkit::is_string($request_data->get('client_id'))) ? trim($request_data->get('client_id')) : null;
-        if (!isset($client_id) || ($client_id == '')) {
-            return $this->responseFail('[client_id]' . ErrorInfo::Errors(2001), 2001);
+        $app_id = ($request_data->has('app_id') && Toolkit::is_string($request_data->get('app_id'))) ? trim($request_data->get('app_id')) : null;
+        if (!isset($app_id) || ($app_id == '')) {
+            return $this->responseFail('[app_id]' . ErrorInfo::Errors(2001), 2001);
         }
         $response_type = ($request_data->has('response_type') && Toolkit::is_string($request_data->get('response_type'))) ? trim($request_data->get('response_type')) : null;
         if (!isset($response_type) || ($response_type != 'code')) {
@@ -60,21 +60,31 @@ class OauthController extends BController
         if (!isset($redirect_uri) || ($redirect_uri == '')) {
             return $this->responseFail('[redirect_uri]' . ErrorInfo::Errors(2001), 2001);
         }
-        $approve = ($request_data->has('approve') && Toolkit::is_integer($request_data->get('approve'))) ? trim($request_data->get('approve')) : null;
-        if (!isset($approve) || (intval($approve, 10) != 1)) {
-            return $this->responseFail('[approve]' . ErrorInfo::Errors(2501), 2501);
+        $scope = ($request_data->has('scope') && Toolkit::is_string($request_data->get('scope'))) ? trim($request_data->get('scope')) : null;
+        if (!isset($scope) || ($scope == '')) {
+            return $this->responseFail('[scope]' . ErrorInfo::Errors(2001), 2001);
+        }
+        $state = ($request_data->has('state') && Toolkit::is_bool($request_data->get('state'))) ? Toolkit::to_bool($request_data->get('state')) : null;
+        if (!isset($state)) {
+            return $this->responseFail('[state]' . ErrorInfo::Errors(2001), 2001);
+        }
+        $is_approve = ($request_data->has('is_approve') && Toolkit::is_bool($request_data->get('is_approve'))) ? Toolkit::to_bool($request_data->get('is_approve')) : null;
+        if (!isset($is_approve)) {
+            return $this->responseFail('[is_approve]' . ErrorInfo::Errors(2001), 2001);
         }
 
         try {
             $oauthService = new OauthService();
-            $authorize['code'] = $oauthService->getAuthorizationCode();
+
+            $authorize['auth_code'] = $oauthService->getAuthorizationCode($app_id, $response_type, $redirect_uri, $scope, $state, $is_approve);
             $data['authorize'] = $authorize;
 
             return $this->responseSucc($data);
+
         } catch (\Exception $e) {
             //Oauth2 系统错误格式：{"httpStatusCode":400,"errorType":"invalid_request","redirectUri":null,"parameter":"code"}
             if (isset($e) && !empty($e)) {
-                return $this->responseFail("[" . $e->parameter . "]" . $e->errorType, 2500);
+                return $this->responseFail($e->getMessage(), 2500);
             } else {
                 return $this->responseFail(ErrorInfo::Errors(2000), 2000);
             }

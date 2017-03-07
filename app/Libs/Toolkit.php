@@ -8,6 +8,8 @@
 
 namespace App\Libs;
 
+use App\Services\LogService;
+
 /**
  * 工具包类库
  *
@@ -16,6 +18,50 @@ namespace App\Libs;
  */
 class Toolkit
 {
+
+    /**
+     * 调试写入日志
+     * 日志保存在: storage/logger/mlog.log
+     *
+     * @param string $msg 日志内容
+     * @return no return
+     */
+    public static function mlog($msg)
+    {
+        $msg = (isset($msg) && Toolkit::is_string($msg)) ? $msg : '';
+        $msg = "\r\n" . $msg . "\r\n";
+
+        $logService = new LogService();
+        $logService->writeToLog('mlog', $msg, \Monolog\Logger::INFO, 'logger', 0);
+    }
+
+    /**
+     * 允许查询日志
+     *
+     * @return no return
+     */
+    public static function enableQueryLog()
+    {
+        \DB::connection()->enableQueryLog();   // 开启查询日志, 从5.0开始需要先执行这句
+    }
+
+    /**
+     * 获取最后执行的sql
+     *
+     * @return string
+     */
+    public static function getLastSql()
+    {
+        $lastSql = array();
+        $sqlList = \DB::getQueryLog();
+
+        if (is_array($sqlList)) {
+            $lastSql = end($sqlList);
+        }
+
+        return $lastSql;
+    }
+
     /**
      * 去除字符串中全部空格
      *
@@ -49,6 +95,37 @@ class Toolkit
     public static function end_with($var, $pattern)
     {
         return (strrchr($var, $pattern) == $pattern);
+    }
+
+    /**
+     * 转换成布尔值（兼容字符串）
+     * 兼容字符串:'true', '1', 'on', 'yes', 'y', 'false', '0', 'off', 'no', 'n'...
+     * source: http://php.net/manual/zh/function.is-bool.php
+     *
+     * @param string|bool $var
+     * @return bool
+     */
+    public static function to_bool($var)
+    {
+        $out = false;
+        if (isset($var)) {
+            if (is_string($var) || static::is_integer($var)) {
+                $var = strtolower(trim($var));
+                switch ($var) {
+                    case 'true':
+                    case '1':
+                    case 'on':
+                    case 'yes':
+                    case 'y':
+                        $out = true;
+                        break;
+                }
+            } elseif (is_bool($var)) {
+                return boolval($var);
+            }
+        }
+
+        return $out;
     }
 
     /**
@@ -86,14 +163,16 @@ class Toolkit
     }
 
     /**
-     * 是否布尔值
+     * 是否布尔值（兼容字符串）
+     * 兼容字符串:'true', '1', 'on', 'yes', 'y', 'false', '0', 'off', 'no', 'n'...
+     * source: http://php.net/manual/zh/function.is-bool.php
      *
      * @param $var
      * @return bool
      */
     public static function is_bool($var)
     {
-        if (isset($var) && is_bool($var)) {
+        if (isset($var) && (((static::is_integer($var) || is_string($var)) && in_array(strtolower(trim($var)), array('true', '1', 'on', 'yes', 'y', 'false', '0', 'off', 'no', 'n'))) || is_bool($var))) {
             return true;
         }
 
