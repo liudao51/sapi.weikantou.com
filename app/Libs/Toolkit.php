@@ -560,4 +560,70 @@ class Toolkit
 
         return $key;
     }
+
+    /**
+     * 生成交易流水号（长度为24位纯数字）
+     *
+     * @return string  201703311324336178821249
+     */
+    function make_transaction_key()
+    {
+        list($usec, $sec) = explode(" ", microtime());
+
+        $msec = round($usec * 1000000);
+
+        $millisecond = str_pad($msec, 6, '0', STR_PAD_RIGHT);  //微秒数6位
+
+        $rnd = mt_rand(1000, 9999); //随机数4位
+
+        $hms = date("YmdHis"); //年月日时分秒数14位
+
+        $transaction_key = $hms . $millisecond . $rnd; //长度共24位
+
+        return $transaction_key;
+    }
+
+    /**
+     * 中文转unicode
+     *
+     * @param $var
+     * @return string "\u5e7f\u5dde" (广州)
+     */
+    function unicode_encode($var)
+    {
+        $var = iconv('UTF-8', 'UCS-2', $var);
+        $len = strlen($var);
+        $str = '';
+        for ($i = 0; $i < $len - 1; $i = $i + 2) {
+            $c = $var[$i];
+            $c2 = $var[$i + 1];
+            if (ord($c) > 0) {// 两个字节的字
+                $cn_word = '\\' . base_convert(ord($c), 10, 16) . base_convert(ord($c2), 10, 16);
+                $str .= strtoupper($cn_word);
+            } else {
+                $str .= $c2;
+            }
+        }
+        return $str;
+    }
+
+    /**
+     * unicode转中文(兼容 "u56fe" 或 "\u7247")
+     * @param $var
+     * @return string 广州(\u5e7f\u5dde)
+     */
+    public function unicode_decode($var)
+    {
+        $var = preg_replace("/((\\\u|u)(\w{4}))/", '\u$3', $var);
+
+        $json = '{"str":"' . $var . '"}';
+
+        $arr = json_decode($json, true);
+
+        if (empty($arr)) {
+            return '';
+        }
+
+        return $arr['str'];
+    }
 }
